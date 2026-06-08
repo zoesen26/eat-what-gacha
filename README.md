@@ -11,7 +11,7 @@ python -m http.server 8787 --bind 0.0.0.0
 打开：
 
 - 本机：`http://127.0.0.1:8787/index.html`
-- 局域网手机：使用电脑当前局域网 IP，例如 `http://172.23.207.162:8787/index.html`
+- 局域网手机：使用电脑当前局域网 IP，例如 `http://<局域网IP>:8787/index.html`
 
 ## GitHub Pages 部署
 
