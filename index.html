@@ -317,23 +317,23 @@ function renderHistory(){
   document.getElementById('month-next').disabled=isCurrentMonth;
   document.getElementById('month-next').style.opacity=isCurrentMonth?'0.4':'1';
 
-  // 本月数据
+  // 本月数据（只统计已去的）
   const monthHist=hist.filter(h=>{const d=new Date(h.ts);return d.getFullYear()===y&&d.getMonth()===m;});
-  document.getElementById('mstat-count').textContent=monthHist.length;
-  const mCat={};monthHist.forEach(h=>{mCat[h.category]=(mCat[h.category]||0)+1;});
+  const monthWent=monthHist.filter(h=>h.went);
+  document.getElementById('mstat-count').textContent=monthWent.length;
+  const mCat={};monthWent.forEach(h=>{mCat[h.category]=(mCat[h.category]||0)+1;});
   const mSorted=Object.entries(mCat).sort((a,b)=>b[1]-a[1]);
   document.getElementById('mstat-fav').textContent=mSorted.length?mSorted[0][0]:'—';
-  // 新店：本月之前从未在历史里出现过的
-  const prevNames=new Set(hist.filter(h=>{const d=new Date(h.ts);return d<new Date(y,m,1);}).map(h=>h.name));
-  const newStores=new Set(monthHist.filter(h=>!prevNames.has(h.name)).map(h=>h.name));
+  const prevNames=new Set(hist.filter(h=>h.went&&new Date(h.ts)<new Date(y,m,1)).map(h=>h.name));
+  const newStores=new Set(monthWent.filter(h=>!prevNames.has(h.name)).map(h=>h.name));
   document.getElementById('mstat-new').textContent=newStores.size;
-  document.getElementById('mstat-golden').textContent=monthHist.filter(h=>h.golden).length;
+  document.getElementById('mstat-golden').textContent=monthWent.filter(h=>h.golden).length;
 
-  // 热力图
+  // 热力图（只统计已去的）
   const daysInMonth=new Date(y,m+1,0).getDate();
-  const firstDow=(new Date(y,m,1).getDay()+6)%7; // 0=周一
+  const firstDow=(new Date(y,m,1).getDay()+6)%7;
   const dayCounts={};
-  monthHist.forEach(h=>{const d=new Date(h.ts).getDate();dayCounts[d]=(dayCounts[d]||0)+1;});
+  monthWent.forEach(h=>{const d=new Date(h.ts).getDate();dayCounts[d]=(dayCounts[d]||0)+1;});
   const todayDate=(isCurrentMonth?now.getDate():null);
   let cells='';
   for(let i=0;i<firstDow;i++)cells+='<div class="heatmap-cell" style="visibility:hidden"></div>';
@@ -351,9 +351,10 @@ function renderHistory(){
   }
   document.getElementById('heatmap-grid').innerHTML=cells;
 
-  // 总览统计
-  document.getElementById('stat-total').textContent=hist.length;
-  const days=new Set(hist.map(h=>new Date(h.ts).toDateString())).size;
+  // 总览统计（累计/天数只统计已去，最常抽到仍统计全部）
+  const allWent=hist.filter(h=>h.went);
+  document.getElementById('stat-total').textContent=allWent.length;
+  const days=new Set(allWent.map(h=>new Date(h.ts).toDateString())).size;
   document.getElementById('stat-days').textContent=days;
   const catCount={};hist.forEach(h=>{catCount[h.category]=(catCount[h.category]||0)+1;});
   const sorted=Object.entries(catCount).sort((a,b)=>b[1]-a[1]);
