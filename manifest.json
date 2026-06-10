@@ -2,7 +2,7 @@
   "name": "吃什么？扭蛋小程序",
   "short_name": "吃什么",
   "description": "让扭蛋机替你决定今天这顿饭",
-  "start_url": "/",
+  "start_url": "/eat-what-gacha/",
   "display": "standalone",
   "background_color": "#fce4ec",
   "theme_color": "#fff7fb",
